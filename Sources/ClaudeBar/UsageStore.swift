@@ -14,12 +14,12 @@ final class UsageStore: ObservableObject {
 
     var refreshIntervalLabel: String {
         switch refreshInterval {
-        case 30:   return "30 秒"
-        case 60:   return "1 分鐘"
-        case 300:  return "5 分鐘"
-        case 600:  return "10 分鐘"
-        case 1800: return "30 分鐘"
-        default:   return "\(refreshInterval) 秒"
+        case 30:   return "30s"
+        case 60:   return "1 min"
+        case 300:  return "5 min"
+        case 600:  return "10 min"
+        case 1800: return "30 min"
+        default:   return "\(refreshInterval)s"
         }
     }
 

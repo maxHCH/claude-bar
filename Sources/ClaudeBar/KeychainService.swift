@@ -17,9 +17,9 @@ enum KeychainError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .notFound:           return "找不到 Claude Code 登入資訊\n請先在 Terminal 執行 claude /login"
-        case .invalidData:        return "Keychain 資料格式錯誤"
-        case .decodeFailed(let m): return "解析失敗：\(m)"
+        case .notFound:            return "No credentials found. Run claude /login in Terminal first."
+        case .invalidData:         return "Invalid Keychain data format."
+        case .decodeFailed(let m): return "Decode failed: \(m)"
         }
     }
 }

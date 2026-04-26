@@ -59,9 +59,7 @@ struct ContentView: View {
                     .foregroundColor(showSettings ? .primary : .secondary)
             }
             .buttonStyle(.plain)
-            Button {
-                closeAction()
-            } label: {
+            Button { closeAction() } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 10))
                     .foregroundColor(.secondary)
@@ -75,7 +73,7 @@ struct ContentView: View {
     var loadingView: some View {
         VStack(spacing: 8) {
             ProgressView()
-            Text("讀取用量中…")
+            Text("Fetching usage…")
                 .font(.system(size: 12))
                 .foregroundColor(.secondary)
         }
@@ -90,11 +88,11 @@ struct ContentView: View {
                 .foregroundColor(errorColor(msg))
             Text(errorTitle(msg))
                 .font(.system(size: 13, weight: .medium))
-            Text(errorDescription(msg))
+            Text(errorDesc(msg))
                 .font(.system(size: 11))
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-            Button("重試") {
+            Button("Retry") {
                 Task { await store.refresh() }
             }
             .buttonStyle(.borderedProminent)
@@ -118,33 +116,33 @@ struct ContentView: View {
     }
 
     func errorTitle(_ msg: String) -> String {
-        if msg.contains("429") || msg.contains("rate_limit") { return "請求太頻繁" }
-        if msg.contains("401") || msg.contains("403")        { return "驗證失敗" }
-        if msg.contains("找不到") || msg.contains("login")   { return "找不到登入資訊" }
-        if msg.contains("Network") || msg.contains("network"){ return "網路連線問題" }
-        return "無法取得資料"
+        if msg.contains("429") || msg.contains("rate_limit") { return "Rate limited" }
+        if msg.contains("401") || msg.contains("403")        { return "Authentication failed" }
+        if msg.contains("找不到") || msg.contains("login")   { return "No credentials found" }
+        if msg.contains("Network") || msg.contains("network"){ return "Network error" }
+        return "Unable to fetch data"
     }
 
-    func errorDescription(_ msg: String) -> String {
-        if msg.contains("429") || msg.contains("rate_limit") { return "稍等一下再重試，或將更新間隔調長" }
-        if msg.contains("401") || msg.contains("403")        { return "請在 Terminal 執行 claude /login 重新登入" }
-        if msg.contains("找不到") || msg.contains("login")   { return "請先在 Terminal 執行 claude /login" }
-        if msg.contains("Network") || msg.contains("network"){ return "請確認網路連線後重試" }
-        return "請稍後再試"
+    func errorDesc(_ msg: String) -> String {
+        if msg.contains("429") || msg.contains("rate_limit") { return "Wait a moment and retry, or increase the refresh interval" }
+        if msg.contains("401") || msg.contains("403")        { return "Run claude /login in Terminal to re-authenticate" }
+        if msg.contains("找不到") || msg.contains("login")   { return "Run claude /login in Terminal first" }
+        if msg.contains("Network") || msg.contains("network"){ return "Check your connection and try again" }
+        return "Please try again later"
     }
 
     func usageView(_ usage: UsageData) -> some View {
         VStack(spacing: 14) {
             UsageGauge(
                 title: "Session",
-                subtitle: "5 小時內",
+                subtitle: "5-hour window",
                 pct: usage.sessionPct,
                 resetsAt: usage.sessionResetsAt
             )
             Divider().opacity(0.3)
             UsageGauge(
                 title: "Weekly",
-                subtitle: "7 天內",
+                subtitle: "7-day window",
                 pct: usage.weeklyPct,
                 resetsAt: usage.weeklyResetsAt
             )
@@ -152,19 +150,19 @@ struct ContentView: View {
                 Divider().opacity(0.3)
                 UsageGauge(
                     title: "Sonnet",
-                    subtitle: "週用量",
+                    subtitle: "Weekly",
                     pct: sonnet,
                     resetsAt: usage.weeklyResetsAt
                 )
             }
             if let updated = store.usage?.fetchedAt {
                 HStack {
-                    Text("更新於 \(updated, style: .time)")
+                    Text("Updated at \(updated, style: .time)")
                         .font(.system(size: 10))
                         .foregroundColor(.secondary)
                         .opacity(0.5)
                     Spacer()
-                    Text("每 \(store.refreshIntervalLabel) 更新")
+                    Text("Every \(store.refreshIntervalLabel)")
                         .font(.system(size: 10))
                         .foregroundColor(.secondary)
                         .opacity(0.4)
@@ -180,17 +178,17 @@ struct SettingsView: View {
     @Binding var showSettings: Bool
 
     let intervals: [(label: String, seconds: Int)] = [
-        ("30 秒", 30),
-        ("1 分鐘", 60),
-        ("5 分鐘", 300),
-        ("10 分鐘", 600),
-        ("30 分鐘", 1800),
+        ("30 seconds", 30),
+        ("1 minute",   60),
+        ("5 minutes",  300),
+        ("10 minutes", 600),
+        ("30 minutes", 1800),
     ]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("自動更新間隔")
+                Text("Auto-refresh interval")
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(.secondary)
 
@@ -232,7 +230,7 @@ struct SettingsView: View {
                 HStack {
                     Image(systemName: "power")
                         .font(.system(size: 11))
-                    Text("結束 ClaudeBar")
+                    Text("Quit ClaudeBar")
                         .font(.system(size: 12))
                 }
                 .foregroundColor(.secondary)
@@ -259,18 +257,18 @@ struct UsageGauge: View {
     var resetText: String {
         guard let date = resetsAt else { return "" }
         let diff = date.timeIntervalSinceNow
-        if diff <= 0 { return "即將重置" }
+        if diff <= 0 { return "Resetting soon" }
         let totalMinutes = Int(diff) / 60
         let hours = totalMinutes / 60
         let minutes = totalMinutes % 60
         let days = hours / 24
         let remainHours = hours % 24
         if days >= 1 {
-            if remainHours > 0 { return "重置：\(days)d \(remainHours)h 後" }
-            return "重置：\(days)d 後"
+            if remainHours > 0 { return "Resets in \(days)d \(remainHours)h" }
+            return "Resets in \(days)d"
         }
-        if hours > 0 { return "重置：\(hours)h \(minutes)m 後" }
-        return "重置：\(minutes)m 後"
+        if hours > 0 { return "Resets in \(hours)h \(minutes)m" }
+        return "Resets in \(minutes)m"
     }
 
     var body: some View {
