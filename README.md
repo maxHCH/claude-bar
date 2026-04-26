@@ -2,7 +2,7 @@
 
 A lightweight macOS menubar app that monitors your Claude.ai Pro/Max usage in real-time.
 
-![ClaudeBar menubar screenshot](https://github.com/user-attachments/assets/placeholder)
+![ClaudeBar menubar screenshot](https://github.com/user-attachments/assets/69ebcc3c-c9a7-4db5-8eae-3acc89253136)
 
 ## Features
 
