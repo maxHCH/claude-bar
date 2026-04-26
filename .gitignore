@@ -1,0 +1,9 @@
+.build/
+*.app/
+*.icns
+*.o
+*.d
+.DS_Store
+.swiftpm/
+*.resolved
+ClaudeBar.iconset/
